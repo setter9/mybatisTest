@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gupaoedu.mapper.ScopeMapper">
+    <!-- 声明这个namespace使用二级缓存 -->
+<!--    <cache/>-->
+
+    <!-- 使用Redis作为二级缓存 -->
+<!--
+    <cache type="org.mybatis.caches.redis.RedisCache"
+           eviction="FIFO" flushInterval="60000" size="512" readOnly="true"/>
+-->
+        <cache type="org.apache.ibatis.cache.impl.PerpetualCache"
+               size="1024"
+               eviction="LRU"
+               flushInterval="120000"
+               readOnly="false"/>
+
+    <resultMap id="BaseResultMap" type="busScope">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="businessScope" property="businessScope" jdbcType="VARCHAR" typeHandler="com.gupaoedu.type.ScopeListTypeHandel"/>
+    </resultMap>
+
+    <!-- ===============以上是resultMap定义================= -->
+    <select id="selectById" resultMap="BaseResultMap">
+        select id,business_scope as "businessScope" from bus_scope where id = #{id}
+    </select>
+
+    <!-- 动态SQL trim -->
+    <insert id="insertScope" parameterType="busScope">
+    insert into bus_scope(id,business_scope)
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="businessScope != null">
+                #{businessScope,jdbcType=VARCHAR,typeHandler=com.gupaoedu.type.ScopeListTypeHandel},
+            </if>
+
+        </trim>
+    </insert>
+</mapper>
