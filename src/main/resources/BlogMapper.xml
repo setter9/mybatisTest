@@ -97,7 +97,7 @@
         </where>
     </select>
 
-    <!-- 动态SQL choose -->
+    <!-- 动态SQL choose  -->
     <select id="selectBlogListChoose" parameterType="blog" resultMap="BaseResultMap" >
         select bid, name, author_id authorId from blog
         <where>

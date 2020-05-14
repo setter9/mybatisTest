@@ -9,6 +9,7 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.Properties;
 /**
  * @Author: qingshan
@@ -23,19 +24,13 @@ public class MyPageInterceptor implements Interceptor {
         Object[] args = invocation.getArgs();
         MappedStatement ms = (MappedStatement) args[0]; // MappedStatement
         BoundSql boundSql = ms.getBoundSql(args[1]); // Object parameter
-        RowBounds rb = (RowBounds) args[2]; // RowBounds
-        // RowBounds为空，无需分页
-        if (rb == RowBounds.DEFAULT) {
-            return invocation.proceed();
-        }
-
-        // 将原 RowBounds 参数设为 RowBounds.DEFAULT，关闭 MyBatis 内置的分页机制
-        //args[2] = RowBounds.DEFAULT;
-
+        Object parameterObject =  boundSql.getParameterObject();
+        SimpleDateFormat sdf = new SimpleDateFormat("YYYYMM");
+        sdf.format(parameterObject);
         // 在SQL后加上limit语句
         String sql = boundSql.getSql();
-        String limit = String.format("LIMIT %d,%d", rb.getOffset(), rb.getLimit());
-        sql = sql + " " + limit;
+
+        sql = sql + " " ;
 
         // 自定义sqlSource
         SqlSource sqlSource = new StaticSqlSource(ms.getConfiguration(), sql, boundSql.getParameterMappings());

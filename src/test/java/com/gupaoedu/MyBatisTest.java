@@ -1,12 +1,14 @@
 package com.gupaoedu;
 
 import com.gupaoedu.domain.BusScope;
+import com.gupaoedu.domain.Fee;
 import com.gupaoedu.domain.associate.AuthorAndBlog;
 import com.gupaoedu.domain.Blog;
 import com.gupaoedu.domain.associate.BlogAndAuthor;
 import com.gupaoedu.domain.associate.BlogAndComment;
 import com.gupaoedu.mapper.BlogMapper;
 import com.gupaoedu.mapper.BlogMapperExt;
+import com.gupaoedu.mapper.FeeMapper;
 import com.gupaoedu.mapper.ScopeMapper;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.*;
@@ -14,7 +16,10 @@ import org.junit.Before;
 import org.junit.Test;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -58,6 +63,27 @@ public class MyBatisTest {
             BlogMapper mapper = session.getMapper(BlogMapper.class);
             Blog blog = mapper.selectBlogById(1);
             System.out.println(blog);
+        } finally {
+            session.close();
+        }
+    }
+    /**
+     * 通过 SqlSession.getMapper(XXXMapper.class)  接口方式
+     * @throws IOException
+     */
+    @Test
+    public void testPuginSelect() throws IOException {
+        SqlSession session = sqlSessionFactory.openSession(); // ExecutorType.BATCH
+        try {
+            FeeMapper mapper = session.getMapper(FeeMapper.class);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            List<Fee> fee = null;
+            try {
+                fee = mapper.selectByDate(sdf.parse("2020-05-11 23:33:43"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            System.out.println(fee);
         } finally {
             session.close();
         }
